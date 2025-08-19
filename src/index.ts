@@ -1,9 +1,10 @@
-import { ChannelType, Client, userMention } from 'discord.js';
+import { ChannelType, Client, TextChannel, userMention } from 'discord.js';
 import Commands from './commands';
 import { DISCORD_CHANNEL, DISCORD_TOKEN } from './config';
 import deployCommands from './deploy-commands';
 import cron from 'node-cron';
-import { getCurrentChores, getChore, ChoreAssignment } from './chore-engine';
+import { getCurrentChores } from './chore-engine';
+import { getChore } from './model/chore';
 
 const CONFIRM_EMOJI = '✅';
 
@@ -43,6 +44,15 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	choreMessages.delete(message.id);
 });
 
+const inChannel = (fn: (channel: TextChannel) => void) => {
+	client.guilds.cache.forEach((guild) => {
+		guild.channels.cache
+			.filter((channel) => channel.type === ChannelType.GuildText)
+			.filter((channel) => channel.name === DISCORD_CHANNEL)
+			.forEach(fn);
+	});
+};
+
 const choreMessages: Map<string, ChoreAssignment> = new Map();
 const announceChores = () => {
 	console.log('Announcing chores for today');
@@ -52,28 +62,37 @@ const announceChores = () => {
 		return;
 	}
 
-	client.guilds.cache.forEach((guild) => {
-		guild.channels.cache
-			.filter((channel) => channel.type === ChannelType.GuildText)
-			.filter((channel) => channel.name === DISCORD_CHANNEL)
-			.forEach((channel) => {
-				chores.forEach((chore) => {
-					const { description } = getChore(chore.choreId);
-					const mention = userMention(chore.assignedTo);
-					channel
-						.send(
-							`${mention} it's your turn to ${description}! React with ${CONFIRM_EMOJI} when complete.`
-						)
-						.then((message) => {
-							choreMessages.set(message.id, chore);
-						})
-						.catch(console.error);
-				});
-			});
+	inChannel((channel) => {
+		chores.forEach((chore) => {
+			const { description } = getChore(chore.choreId);
+			const mention = userMention(chore.assignedTo);
+			channel
+				.send(
+					`${mention} it's your turn to ${description}! React with ${CONFIRM_EMOJI} when complete.`
+				)
+				.then((message) => {
+					choreMessages.set(message.id, chore);
+				})
+				.catch(console.error);
+		});
 	});
 };
 
 // TODO: Make this daily
 // cron.schedule('*/5 * * * * *', announceChores);
+
+// Remind us to take out the trash every Wednesday at 21h
+cron.schedule('0 21 * * 3', () => {
+	inChannel((channel) => {
+		channel.send(`Hey @everyone, it's time to take out the trash! 🗑️`);
+	});
+});
+
+// Remind us to take out the recycling every Sunday at 21h
+cron.schedule('0 21 * * 7', () => {
+	inChannel((channel) => {
+		channel.send(`Hey @everyone, it's time to take out the recycling and compost! ♻️`);
+	});
+});
 
 client.login(DISCORD_TOKEN);
