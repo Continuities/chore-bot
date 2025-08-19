@@ -1,10 +1,10 @@
 import { ChannelType, Client, TextChannel, userMention } from 'discord.js';
 import Commands from './commands';
-import { DISCORD_CHANNEL, DISCORD_TOKEN } from './config';
+import { ANNOUNCE_CHORES, DISCORD_CHANNEL, DISCORD_TOKEN } from './config';
 import deployCommands from './deploy-commands';
 import cron from 'node-cron';
 import { getCurrentChores } from './chore-engine';
-import { getChore } from './model/chore';
+import { getChoreDescription } from './model/chore';
 
 const CONFIRM_EMOJI = '✅';
 
@@ -14,8 +14,6 @@ const client = new Client({
 
 client.once('ready', () => {
 	console.log('Chorebot is ready! 🤖');
-	// TODO: Remove
-	announceChores();
 });
 
 client.on('guildCreate', async (guild) => {
@@ -64,7 +62,7 @@ const announceChores = () => {
 
 	inChannel((channel) => {
 		chores.forEach((chore) => {
-			const { description } = getChore(chore.choreId);
+			const description = getChoreDescription(chore.choreId);
 			const mention = userMention(chore.assignedTo);
 			channel
 				.send(
@@ -78,18 +76,22 @@ const announceChores = () => {
 	});
 };
 
-// TODO: Make this daily
-// cron.schedule('*/5 * * * * *', announceChores);
+// Acounce chores every day at noon, if there are any
+if (ANNOUNCE_CHORES) {
+	cron.schedule('0 12 * * *', announceChores);
+} else {
+	console.log('Chore announcements are disabled');
+}
 
-// Remind us to take out the trash every Wednesday at 21h
-cron.schedule('0 21 * * 3', () => {
+// Remind us to take out the trash every Wednesday at 22h
+cron.schedule('0 22 * * 3', () => {
 	inChannel((channel) => {
 		channel.send(`Hey @everyone, it's time to take out the trash! 🗑️`);
 	});
 });
 
-// Remind us to take out the recycling every Sunday at 21h
-cron.schedule('0 21 * * 7', () => {
+// Remind us to take out the recycling every Sunday at 22h
+cron.schedule('0 22 * * 7', () => {
 	inChannel((channel) => {
 		channel.send(`Hey @everyone, it's time to take out the recycling and compost! ♻️`);
 	});
