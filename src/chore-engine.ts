@@ -1,4 +1,4 @@
-export const getCurrentChores = (): ChoreAssignment[] => {
+export const getCurrentChores = (model: ChoresModelType): ChoreAssignment[] => {
 	// TODO
 
 	// 1. Get the list of chores that are due in the next X days

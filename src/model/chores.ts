@@ -24,6 +24,8 @@ declare global {
 		lastCompleted: Date | null;
 		completedBy: string | null;
 	};
+
+	type ChoresModelType = ReturnType<typeof ChoresModel>;
 }
 
 const Chores: ChoreDefinition[] = [
@@ -63,27 +65,35 @@ const roommateMap: Record<UserId, Roommate> = Object.fromEntries(
 	Roommates.map((roommate) => [roommate.userId, roommate])
 );
 
-const ChoreStates: Record<ChoreId, ChoreState> = Object.fromEntries(
-	Chores.map((chore) => [
-		chore.id,
-		{
-			choreId: chore.id,
-			lastCompleted: null,
-			completedBy: null
-		}
-	])
-);
+const ChoresModel = (init?: ChoreState[]) => {
+	const ChoreStates = init
+		? Object.fromEntries(init.map((s) => [s.choreId, s]))
+		: Object.fromEntries(
+				Chores.map((chore) => [
+					chore.id,
+					{
+						choreId: chore.id,
+						lastCompleted: null,
+						completedBy: null
+					}
+				])
+		  );
+	return {
+		getDueChores: (withinDays: number, ofDate: Date): ChoreState[] =>
+			Chores.map((chore) => {
+				const state = ChoreStates[chore.id];
+				const dueDate = state.lastCompleted
+					? new Date(state.lastCompleted.getTime() + chore.frequencyDays * 24 * 60 * 60 * 1000)
+					: ofDate;
+				if (ofDate < new Date(dueDate.getTime() - withinDays * 24 * 60 * 60 * 1000)) {
+					return null;
+				}
+				return state;
+			}).filter(Boolean) as ChoreState[]
+	};
+};
+
+export default ChoresModel;
 
 export const getChoreDescription = (choreId: ChoreId): string => choreMap[choreId].description;
 export const getRoommate = (userId: UserId): Roommate => roommateMap[userId];
-export const getDueChores = (withinDays: number, ofDate: Date): ChoreState[] =>
-	Chores.map((chore) => {
-		const state = ChoreStates[chore.id];
-		const dueDate = state.lastCompleted
-			? new Date(state.lastCompleted.getTime() + chore.frequencyDays * 24 * 60 * 60 * 1000)
-			: ofDate;
-		if (ofDate < new Date(dueDate.getTime() - withinDays * 24 * 60 * 60 * 1000)) {
-			return null;
-		}
-		return state;
-	}).filter(Boolean) as ChoreState[];

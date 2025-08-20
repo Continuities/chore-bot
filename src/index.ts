@@ -4,9 +4,11 @@ import { ANNOUNCE_CHORES, DISCORD_CHANNEL, DISCORD_TOKEN } from './config';
 import deployCommands from './deploy-commands';
 import cron from 'node-cron';
 import { getCurrentChores } from './chore-engine';
-import { getChoreDescription } from './model/chore';
+import ChoresModel, { getChoreDescription } from './model/chores';
 
 const CONFIRM_EMOJI = '✅';
+
+const model = ChoresModel();
 
 const client = new Client({
 	intents: ['Guilds', 'GuildMessages', 'GuildMessageReactions', 'DirectMessages']
@@ -55,7 +57,7 @@ const choreMessages: Map<string, ChoreAssignment> = new Map();
 const announceChores = () => {
 	console.log('Announcing chores for today');
 
-	const chores = getCurrentChores();
+	const chores = getCurrentChores(model);
 	if (chores.length === 0) {
 		return;
 	}
