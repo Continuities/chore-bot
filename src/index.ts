@@ -1,9 +1,9 @@
 import { ChannelType, Client, TextChannel, userMention } from 'discord.js';
 import Commands from './commands';
-import { ANNOUNCE_CHORES, DISCORD_CHANNEL, DISCORD_TOKEN } from './config';
+import { CHORE_CRON, DISCORD_CHANNEL, DISCORD_TOKEN, RECYCLING_CRON, TRASH_CRON } from './config';
 import deployCommands from './deploy-commands';
 import cron from 'node-cron';
-import { getCurrentChores } from './chore-engine';
+import { assignChores } from './chore-engine';
 import ChoresModel, { getChoreDescription } from './model/chores';
 
 const CONFIRM_EMOJI = '✅';
@@ -54,10 +54,10 @@ const inChannel = (fn: (channel: TextChannel) => void) => {
 };
 
 const choreMessages: Map<string, ChoreAssignment> = new Map();
-const announceChores = () => {
-	console.log('Announcing chores for today');
+const assignAndAnnounceChores = () => {
+	console.log('Assining and announcing chores for today');
 
-	const chores = getCurrentChores(model);
+	const chores = assignChores(model);
 	if (chores.length === 0) {
 		return;
 	}
@@ -78,25 +78,33 @@ const announceChores = () => {
 	});
 };
 
-// Acounce chores every day at noon, if there are any
-if (ANNOUNCE_CHORES) {
-	cron.schedule('0 12 * * *', announceChores);
+// Assign and acounce chores if necessary
+if (CHORE_CRON) {
+	cron.schedule(CHORE_CRON, assignAndAnnounceChores);
 } else {
 	console.log('Chore announcements are disabled');
 }
 
-// Remind us to take out the trash every Wednesday at 22h
-cron.schedule('0 22 * * 3', () => {
-	inChannel((channel) => {
-		channel.send(`Hey @everyone, it's time to take out the trash! 🗑️`);
+// Remind us to take out the trash
+if (TRASH_CRON) {
+	cron.schedule(TRASH_CRON, () => {
+		inChannel((channel) => {
+			channel.send(`Hey @everyone, it's time to take out the trash! 🗑️`);
+		});
 	});
-});
+} else {
+	console.log('Trash reminders are disabled');
+}
 
-// Remind us to take out the recycling every Sunday at 22h
-cron.schedule('0 22 * * 7', () => {
-	inChannel((channel) => {
-		channel.send(`Hey @everyone, it's time to take out the recycling and compost! ♻️`);
+// Remind us to take out the recycling
+if (RECYCLING_CRON) {
+	cron.schedule(RECYCLING_CRON, () => {
+		inChannel((channel) => {
+			channel.send(`Hey @everyone, it's time to take out the recycling and compost! ♻️`);
+		});
 	});
-});
+} else {
+	console.log('Recycling reminders are disabled');
+}
 
 client.login(DISCORD_TOKEN);
