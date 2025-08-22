@@ -76,6 +76,26 @@ describe('Chore Model', () => {
 				{ choreId: 'oven', lastCompleted: lastMonth, completedBy: 'chris' },
 				{ choreId: 'fridge', lastCompleted: lastMonth, completedBy: 'diana' }
 			]
+		},
+		{
+			withinDays: 1,
+			states: [
+				{ choreId: 'bathroom', lastCompleted: inDays(today, -5), completedBy: 'alice' },
+				{ choreId: 'floors', lastCompleted: today, completedBy: 'bob' },
+				{ choreId: 'oven', lastCompleted: today, completedBy: 'chris' },
+				{ choreId: 'fridge', lastCompleted: today, completedBy: 'diana' }
+			],
+			expected: []
+		},
+		{
+			withinDays: 2,
+			states: [
+				{ choreId: 'bathroom', lastCompleted: inDays(today, -5), completedBy: 'alice' },
+				{ choreId: 'floors', lastCompleted: today, completedBy: 'bob' },
+				{ choreId: 'oven', lastCompleted: today, completedBy: 'chris' },
+				{ choreId: 'fridge', lastCompleted: today, completedBy: 'diana' }
+			],
+			expected: [{ choreId: 'bathroom', lastCompleted: inDays(today, -5), completedBy: 'alice' }]
 		}
 	];
 	getDueChoresTests.forEach(({ states, withinDays, expected }) => {
