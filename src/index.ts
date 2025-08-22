@@ -28,7 +28,7 @@ client.on('interactionCreate', async (interaction) => {
 	}
 	const { commandName } = interaction;
 	if (Commands[commandName as keyof typeof Commands]) {
-		Commands[commandName as keyof typeof Commands].execute(interaction);
+		Commands[commandName as keyof typeof Commands].execute(model, interaction);
 	}
 });
 
