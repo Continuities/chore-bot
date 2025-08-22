@@ -26,6 +26,11 @@ declare global {
 	};
 
 	type ChoresModelType = ReturnType<typeof ChoresModel>;
+
+	type ChoreModelInit = {
+		states?: ChoreState[];
+		assignments?: ChoreAssignment[];
+	};
 }
 
 const Chores: ChoreDefinition[] = [
@@ -65,19 +70,20 @@ const roommateMap: Record<UserId, Roommate> = Object.fromEntries(
 	Roommates.map((roommate) => [roommate.userId, roommate])
 );
 
-const ChoresModel = (init?: ChoreState[]) => {
-	const ChoreStates = init
-		? Object.fromEntries(init.map((s) => [s.choreId, s]))
-		: Object.fromEntries(
-				Chores.map((chore) => [
-					chore.id,
-					{
-						choreId: chore.id,
-						lastCompleted: null,
-						completedBy: null
-					}
-				])
-		  );
+const ChoresModel = (init?: ChoreModelInit) => {
+	const ChoreStates = Object.fromEntries((init?.states ?? []).map((s) => [s.choreId, s]));
+	for (const chore of Chores) {
+		if (!ChoreStates[chore.id]) {
+			ChoreStates[chore.id] = {
+				choreId: chore.id,
+				lastCompleted: null,
+				completedBy: null
+			};
+		}
+	}
+	const ChoreAssignments = init?.assignments
+		? new Map(init?.assignments.map((a) => [a.choreId, a]))
+		: new Map<ChoreId, ChoreAssignment>();
 	return {
 		getDueChores: (withinDays: number, ofDate: Date): ChoreState[] =>
 			Chores.map((chore) => {
@@ -89,7 +95,21 @@ const ChoresModel = (init?: ChoreState[]) => {
 					return null;
 				}
 				return state;
-			}).filter(Boolean) as ChoreState[]
+			}).filter(Boolean) as ChoreState[],
+		getChoreAssignments: (): ChoreAssignment[] => [...ChoreAssignments.values()],
+		getChoreAssignment: (choreId: ChoreId): ChoreAssignment | undefined =>
+			ChoreAssignments.get(choreId),
+		assignChore: (choreId: ChoreId, assignedTo: UserId, dueDate: Date): void => {
+			ChoreAssignments.set(choreId, { choreId, assignedTo, dueDate });
+		},
+		markChoreCompleted: (choreId: ChoreId, completedBy: UserId, completedAt: Date): void => {
+			const state = ChoreStates[choreId];
+			if (state) {
+				state.lastCompleted = completedAt;
+				state.completedBy = completedBy;
+			}
+			ChoreAssignments.delete(choreId);
+		}
 	};
 };
 
