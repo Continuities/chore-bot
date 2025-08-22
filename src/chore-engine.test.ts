@@ -1,53 +1,127 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { assignChores } from './chore-engine';
-import ChoresModel from './model/chores';
-import { inDays } from './date';
+import ChoresModel, { Roommates } from './model/chores';
+import { inDays, withoutTime } from './date';
+import { WARNING_DAYS } from './config';
 
 describe('Chore Engine', () => {
-	const today = new Date();
+	const today = withoutTime(new Date());
+	const tomorrow = inDays(today, 1);
 	const nextWeek = inDays(today, 7);
 	const nextMonth = inDays(today, 30);
+	const matt = Roommates[0].userId;
+	const michael = Roommates[1].userId;
+	const jack = Roommates[2].userId;
 	const tests = [
 		{
 			states: [],
 			assignments: [],
 			expected: [
 				{
-					assignedTo: '262840813434830849',
+					assignedTo: matt,
 					choreId: 'bathroom',
 					dueDate: nextWeek
 				},
 				{
-					assignedTo: '243526819226058752',
+					assignedTo: michael,
 					choreId: 'floors',
 					dueDate: nextWeek
 				},
 				{
-					assignedTo: '536686650936524836',
+					assignedTo: jack,
 					choreId: 'oven',
 					dueDate: nextMonth
 				},
 				{
-					assignedTo: '262840813434830849',
+					assignedTo: matt,
 					choreId: 'fridge',
 					dueDate: nextMonth
+				}
+			]
+		},
+		{
+			states: [
+				{
+					choreId: 'bathroom',
+					completedBy: matt,
+					lastCompleted: inDays(today, -6)
+				}
+			],
+			assignments: [],
+			expected: [
+				{
+					assignedTo: michael,
+					choreId: 'bathroom',
+					dueDate: tomorrow
+				},
+				{
+					assignedTo: matt,
+					choreId: 'floors',
+					dueDate: nextWeek
+				},
+				{
+					assignedTo: jack,
+					choreId: 'oven',
+					dueDate: nextMonth
+				},
+				{
+					assignedTo: matt,
+					choreId: 'fridge',
+					dueDate: nextMonth
+				}
+			]
+		},
+		{
+			states: [
+				{
+					choreId: 'bathroom',
+					completedBy: matt,
+					lastCompleted: inDays(today, -6)
+				},
+				{
+					choreId: 'floors',
+					completedBy: michael,
+					lastCompleted: today
+				},
+				{
+					choreId: 'oven',
+					completedBy: jack,
+					lastCompleted: inDays(today, -29)
+				},
+				{
+					choreId: 'fridge',
+					completedBy: matt,
+					lastCompleted: today
+				}
+			],
+			assignments: [],
+			expected: [
+				{
+					assignedTo: michael,
+					choreId: 'bathroom',
+					dueDate: tomorrow
+				},
+				{
+					assignedTo: matt,
+					choreId: 'oven',
+					dueDate: tomorrow
 				}
 			]
 		}
 	];
 
-	tests.forEach(({ states, assignments, expected }) => {
+	tests.forEach(({ states, assignments, expected }, index) => {
 		const model = ChoresModel({ states, assignments });
 		it('should assign new chores', () => {
 			const chores = model.getChoreAssignments();
 			assert.deepStrictEqual(chores, assignments);
-			const assignedChores = assignChores(model);
+			assignChores(model);
 			const newChores = model.getChoreAssignments();
 			assert.deepStrictEqual(
 				newChores,
 				expected,
-				`Expected ${JSON.stringify(chores)} to be ${JSON.stringify(expected)}`
+				`[${index}] Expected ${JSON.stringify(chores)} to be ${JSON.stringify(expected)}`
 			);
 		});
 	});

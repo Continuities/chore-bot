@@ -113,7 +113,7 @@ const ChoresModel = (init?: ChoreModelInit) => {
 		getActiveChores: (roommate: UserId): ChoreAssignment[] => {
 			const today = new Date();
 			return [...ChoreAssignments.values()].filter(
-				(assignment) => assignment.assignedTo === roommate && assignment.dueDate > today
+				(assignment) => assignment.assignedTo === roommate && assignment.dueDate >= today
 			);
 		}
 	};
