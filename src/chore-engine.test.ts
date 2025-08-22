@@ -3,7 +3,6 @@ import assert from 'node:assert';
 import { assignChores } from './chore-engine';
 import ChoresModel, { Roommates } from './model/chores';
 import { inDays, withoutTime } from './date';
-import { WARNING_DAYS } from './config';
 
 describe('Chore Engine', () => {
 	const today = withoutTime(new Date());
@@ -81,12 +80,12 @@ describe('Chore Engine', () => {
 				},
 				{
 					choreId: 'floors',
-					completedBy: michael,
+					completedBy: jack,
 					lastCompleted: today
 				},
 				{
 					choreId: 'oven',
-					completedBy: jack,
+					completedBy: michael,
 					lastCompleted: inDays(today, -29)
 				},
 				{
@@ -103,8 +102,55 @@ describe('Chore Engine', () => {
 					dueDate: tomorrow
 				},
 				{
+					assignedTo: jack,
+					choreId: 'oven',
+					dueDate: tomorrow
+				}
+			]
+		},
+		{
+			states: [
+				{
+					choreId: 'bathroom',
+					completedBy: michael,
+					lastCompleted: inDays(today, -6)
+				},
+				{
+					choreId: 'floors',
+					completedBy: matt,
+					lastCompleted: inDays(today, -6)
+				},
+				{
+					choreId: 'oven',
+					completedBy: jack,
+					lastCompleted: inDays(today, -29)
+				},
+				{
+					choreId: 'fridge',
+					completedBy: michael,
+					lastCompleted: inDays(today, -29)
+				}
+			],
+			assignments: [],
+			expected: [
+				{
+					assignedTo: jack,
+					choreId: 'bathroom',
+					dueDate: tomorrow
+				},
+				{
+					assignedTo: michael,
+					choreId: 'floors',
+					dueDate: tomorrow
+				},
+				{
 					assignedTo: matt,
 					choreId: 'oven',
+					dueDate: tomorrow
+				},
+				{
+					assignedTo: jack,
+					choreId: 'fridge',
 					dueDate: tomorrow
 				}
 			]

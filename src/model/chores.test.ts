@@ -1,6 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import ChoresModel, { getChoreDescription, getRoommate } from './chores';
+import ChoresModel, {
+	getChoreDescription,
+	getRoommate,
+	getRoommateOrder,
+	Roommates
+} from './chores';
 import { inDays } from '../date';
 
 describe('Chore Model', () => {
@@ -18,6 +23,9 @@ describe('Chore Model', () => {
 	const tomorrow = inDays(today, 1);
 	const lastWeek = inDays(today, -7);
 	const lastMonth = inDays(today, -30);
+	const matt = Roommates[0].userId;
+	const michael = Roommates[1].userId;
+	const jack = Roommates[2].userId;
 
 	const getDueChoresTests = [
 		{
@@ -146,5 +154,51 @@ describe('Chore Model', () => {
 			{ choreId: 'floors', assignedTo: 'bob', dueDate: tomorrow }
 		]);
 		assert.deepStrictEqual(model.getActiveChores('charlie'), []);
+	});
+
+	const getRoommateOrderTests = [
+		{
+			startAfter: undefined,
+			expected: [
+				[matt, 0],
+				[michael, 1],
+				[jack, 2]
+			]
+		},
+		{
+			startAfter: matt,
+			expected: [
+				[michael, 0],
+				[jack, 1],
+				[matt, 2]
+			]
+		},
+		{
+			startAfter: michael,
+			expected: [
+				[jack, 0],
+				[matt, 1],
+				[michael, 2]
+			]
+		},
+		{
+			startAfter: jack,
+			expected: [
+				[matt, 0],
+				[michael, 1],
+				[jack, 2]
+			]
+		}
+	];
+	getRoommateOrderTests.forEach(({ startAfter, expected }, i) => {
+		it('should return roommates in correct order', () => {
+			const order = getRoommateOrder(startAfter);
+			const orderArray = Array.from(order.entries());
+			assert.deepStrictEqual(
+				orderArray.sort(),
+				expected.sort(),
+				`[${i}] Expected order to be ${JSON.stringify(expected)}`
+			);
+		});
 	});
 });

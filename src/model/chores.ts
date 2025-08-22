@@ -124,3 +124,14 @@ export default ChoresModel;
 export const getChoreDescription = (choreId: ChoreId): string => choreMap[choreId].description;
 export const getChoreFrequency = (choreId: ChoreId): number => choreMap[choreId].frequencyDays;
 export const getRoommate = (userId: UserId): Roommate => roommateMap[userId];
+export const getRoommateOrder = (startAfter?: UserId | null): Map<UserId, number> => {
+	const afterIndex = startAfter
+		? Roommates.findIndex((r) => r.userId === startAfter)
+		: Roommates.length - 1;
+	return new Map(
+		Roommates.map((r, index) => [
+			r.userId,
+			(index + Roommates.length - afterIndex - 1) % Roommates.length
+		])
+	);
+};
