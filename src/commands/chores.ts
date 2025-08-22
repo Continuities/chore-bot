@@ -13,8 +13,10 @@ export async function execute(model: ChoresModelType, interaction: CommandIntera
 	const choreList = chores
 		.map(
 			(chore) =>
-				`${chore.choreId}: ${getRoommate(chore.assignedTo)}, due ${chore.dueDate.toDateString()}`
+				`${chore.choreId}: ${
+					getRoommate(chore.assignedTo).name
+				}, due ${chore.dueDate.toDateString()}`
 		)
 		.join('\n');
-	return interaction.reply('TODO: Implement chores command!');
+	return interaction.reply(choreList);
 }

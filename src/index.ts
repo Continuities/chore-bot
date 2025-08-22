@@ -5,6 +5,7 @@ import deployCommands from './deploy-commands';
 import cron from 'node-cron';
 import { assignChores } from './chore-engine';
 import ChoresModel, { getChoreDescription } from './model/chores';
+import { withoutTime } from './date';
 
 const CONFIRM_EMOJI = '✅';
 
@@ -41,6 +42,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 		message.reply(`Thanks ${userMention(user.id)}! 🎉`);
 	}
 
+	model.markChoreCompleted(chore.choreId, user.id, withoutTime(new Date()));
 	choreMessages.delete(message.id);
 });
 
@@ -68,7 +70,7 @@ const assignAndAnnounceChores = () => {
 			const mention = userMention(chore.assignedTo);
 			channel
 				.send(
-					`${mention} it's your turn to ${description}! React with ${CONFIRM_EMOJI} when complete.`
+					`${mention} it's your turn to ${description}!\nReact with ${CONFIRM_EMOJI} when complete.`
 				)
 				.then((message) => {
 					choreMessages.set(message.id, chore);
