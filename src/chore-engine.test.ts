@@ -161,11 +161,23 @@ describe('Chore Engine', () => {
 		const model = ChoresModel({ states, assignments });
 		it('should assign new chores', () => {
 			const chores = model.getChoreAssignments();
-			assert.deepStrictEqual(chores, assignments);
+			assert.deepStrictEqual(
+				chores,
+				assignments,
+				`[${index}] Expected initial chores to be ${JSON.stringify(assignments)}`
+			);
 			assignChores(model);
 			const newChores = model.getChoreAssignments();
 			assert.deepStrictEqual(
 				newChores,
+				expected,
+				`[${index}] Expected ${JSON.stringify(chores)} to be ${JSON.stringify(expected)}`
+			);
+			const assigned = assignChores(model);
+			const newerChores = model.getChoreAssignments();
+			assert.equal(assigned.length, 0, `Expected no new chores to be assigned on a second run`);
+			assert.deepStrictEqual(
+				newerChores,
 				expected,
 				`[${index}] Expected ${JSON.stringify(chores)} to be ${JSON.stringify(expected)}`
 			);

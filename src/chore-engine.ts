@@ -4,9 +4,10 @@ import { Roommates, getChoreFrequency, getRoommateOrder } from './model/chores';
 
 export const assignChores = (model: ChoresModelType): ChoreAssignment[] => {
 	// 1. Get the list of chores that are due in the next X days
-	const dueChores = model.getDueChores(WARNING_DAYS, new Date());
-	// 2. Filter out chores that have already been assigned
-	dueChores.filter((chore) => model.getChoreAssignment(chore.choreId) === undefined);
+	const dueChores = model
+		.getDueChores(WARNING_DAYS, new Date())
+		// 2. Filter out chores that have already been assigned
+		.filter((chore) => model.getChoreAssignment(chore.choreId) === undefined);
 	// 3. Assign chores to roommates
 	const newAssignments = [];
 	for (const { choreId, completedBy, lastCompleted } of dueChores) {
