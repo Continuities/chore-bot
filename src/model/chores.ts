@@ -117,3 +117,7 @@ export default ChoresModel;
 
 export const getChoreDescription = (choreId: ChoreId): string => choreMap[choreId].description;
 export const getRoommate = (userId: UserId): Roommate => roommateMap[userId];
+export const getNextRoommate = (currentUserId: UserId): Roommate => {
+	const currentIndex = Roommates.findIndex((r) => r.userId === currentUserId);
+	return Roommates[(currentIndex + 1) % Roommates.length];
+};

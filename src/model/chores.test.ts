@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import ChoresModel, { getChoreDescription, getRoommate } from './chores';
+import ChoresModel, { getChoreDescription, getNextRoommate, getRoommate } from './chores';
 
 describe('Chore Model', () => {
 	it('should return chore description for a valid choreId', () => {
@@ -11,6 +11,24 @@ describe('Chore Model', () => {
 	it('should return roommate details for a valid userId', () => {
 		const roommate = getRoommate('262840813434830849');
 		assert.strictEqual(roommate.name, 'Matt', 'Expected roommate name to match');
+	});
+
+	it('should return the next roommate in round-robin order', () => {
+		assert.strictEqual(
+			getNextRoommate('262840813434830849').name,
+			'Michael',
+			'Expected to get Michael after Matt'
+		);
+		assert.strictEqual(
+			getNextRoommate('243526819226058752').name,
+			'Jack',
+			'Expected to get Jack after Michael'
+		);
+		assert.strictEqual(
+			getNextRoommate('536686650936524836').name,
+			'Matt',
+			'Expected to get Matt after Jack'
+		);
 	});
 
 	const today = new Date();
