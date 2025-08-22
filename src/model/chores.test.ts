@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import ChoresModel, { getChoreDescription, getNextRoommate, getRoommate } from './chores';
+import ChoresModel, { getChoreDescription, getRoommate } from './chores';
+import { inDays } from '../date';
 
 describe('Chore Model', () => {
 	it('should return chore description for a valid choreId', () => {
@@ -13,27 +14,10 @@ describe('Chore Model', () => {
 		assert.strictEqual(roommate.name, 'Matt', 'Expected roommate name to match');
 	});
 
-	it('should return the next roommate in round-robin order', () => {
-		assert.strictEqual(
-			getNextRoommate('262840813434830849').name,
-			'Michael',
-			'Expected to get Michael after Matt'
-		);
-		assert.strictEqual(
-			getNextRoommate('243526819226058752').name,
-			'Jack',
-			'Expected to get Jack after Michael'
-		);
-		assert.strictEqual(
-			getNextRoommate('536686650936524836').name,
-			'Matt',
-			'Expected to get Matt after Jack'
-		);
-	});
-
 	const today = new Date();
-	const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-	const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+	const tomorrow = inDays(today, 1);
+	const lastWeek = inDays(today, -7);
+	const lastMonth = inDays(today, -30);
 
 	const getDueChoresTests = [
 		{
@@ -145,5 +129,22 @@ describe('Chore Model', () => {
 			[],
 			'Expected assignments to be cleared after completion'
 		);
+	});
+
+	it('should get active chores for a roommate', () => {
+		const model = ChoresModel({
+			assignments: [
+				{ choreId: 'bathroom', assignedTo: 'alice', dueDate: lastWeek },
+				{ choreId: 'oven', assignedTo: 'alice', dueDate: tomorrow },
+				{ choreId: 'floors', assignedTo: 'bob', dueDate: tomorrow }
+			]
+		});
+		assert.deepStrictEqual(model.getActiveChores('alice'), [
+			{ choreId: 'oven', assignedTo: 'alice', dueDate: tomorrow }
+		]);
+		assert.deepStrictEqual(model.getActiveChores('bob'), [
+			{ choreId: 'floors', assignedTo: 'bob', dueDate: tomorrow }
+		]);
+		assert.deepStrictEqual(model.getActiveChores('charlie'), []);
 	});
 });

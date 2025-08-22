@@ -56,11 +56,11 @@ const Chores: ChoreDefinition[] = [
 	}
 ];
 
-const Roommates: Roommate[] = [
+export const Roommates: Roommate[] = [
 	{ name: 'Matt', userId: '262840813434830849' },
 	{ name: 'Michael', userId: '243526819226058752' },
 	{ name: 'Jack', userId: '536686650936524836' }
-];
+] as const;
 
 const choreMap: Record<ChoreId, ChoreDefinition> = Object.fromEntries(
 	Chores.map((chore) => [chore.id, chore])
@@ -109,6 +109,12 @@ const ChoresModel = (init?: ChoreModelInit) => {
 				state.completedBy = completedBy;
 			}
 			ChoreAssignments.delete(choreId);
+		},
+		getActiveChores: (roommate: UserId): ChoreAssignment[] => {
+			const today = new Date();
+			return [...ChoreAssignments.values()].filter(
+				(assignment) => assignment.assignedTo === roommate && assignment.dueDate > today
+			);
 		}
 	};
 };
@@ -116,8 +122,5 @@ const ChoresModel = (init?: ChoreModelInit) => {
 export default ChoresModel;
 
 export const getChoreDescription = (choreId: ChoreId): string => choreMap[choreId].description;
+export const getChoreFrequency = (choreId: ChoreId): number => choreMap[choreId].frequencyDays;
 export const getRoommate = (userId: UserId): Roommate => roommateMap[userId];
-export const getNextRoommate = (currentUserId: UserId): Roommate => {
-	const currentIndex = Roommates.findIndex((r) => r.userId === currentUserId);
-	return Roommates[(currentIndex + 1) % Roommates.length];
-};
