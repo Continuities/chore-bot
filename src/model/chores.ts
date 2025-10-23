@@ -148,3 +148,13 @@ export const getRoommateOrder = (startAfter?: UserId | null): Map<UserId, number
 		])
 	);
 };
+
+export const assignmentToString = (assignment: ChoreAssignment): string => {
+	const chore = choreMap[assignment.choreId];
+	return [
+		`**${chore.description}**`,
+		chore.longDescription,
+		`Assigned to: ${getRoommate(assignment.assignedTo).name}`,
+		`Complete by: ${assignment.dueDate.toDateString()}`
+	].join('\n');
+};

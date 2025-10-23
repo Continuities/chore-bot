@@ -1,7 +1,7 @@
-import * as ping from './ping';
 import * as chores from './chores';
+import * as due from './due';
 
 export default {
-	ping,
-	chores
+	chores,
+	due
 };

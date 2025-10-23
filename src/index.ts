@@ -39,7 +39,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	if (!chore || emoji.name !== CONFIRM_EMOJI) return;
 
 	if (message.channel.isSendable()) {
-		message.reply(`Thanks ${userMention(user.id)}! 🎉`);
+		message.react(`🎉`);
 	}
 
 	model.markChoreCompleted(chore.choreId, user.id, withoutTime(new Date()));

@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({
+	path: `.env${process.env.NODE_ENV ? `.${process.env.NODE_ENV}` : ''}`
+});
 
 const {
 	DISCORD_TOKEN,
