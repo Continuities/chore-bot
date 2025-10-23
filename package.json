@@ -4,7 +4,7 @@
     "dev": "NODE_ENV=local tsx watch src/index.ts",
     "start": "NODE_ENV=production node dist/index.js",
     "build": "tsup src/index.ts --minify",
-    "test": "node --import tsx --test 'src/**/*.test.ts'"
+    "test": "NODE_ENV=local node --import tsx --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "discord.js": "^14.21.0",
