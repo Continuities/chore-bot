@@ -34,6 +34,7 @@ describe('Chore Model', () => {
 			expected: [
 				{ choreId: 'bathroom', lastCompleted: null, completedBy: null },
 				{ choreId: 'floors', lastCompleted: null, completedBy: null },
+				{ choreId: 'terrace', lastCompleted: null, completedBy: null },
 				{ choreId: 'oven', lastCompleted: null, completedBy: null },
 				{ choreId: 'fridge', lastCompleted: null, completedBy: null }
 			]
@@ -43,10 +44,12 @@ describe('Chore Model', () => {
 			states: [
 				{ choreId: 'bathroom', lastCompleted: today, completedBy: 'alice' },
 				{ choreId: 'floors', lastCompleted: today, completedBy: 'bob' },
+				{ choreId: 'terrace', lastCompleted: null, completedBy: null },
 				{ choreId: 'oven', lastCompleted: null, completedBy: null },
 				{ choreId: 'fridge', lastCompleted: null, completedBy: null }
 			],
 			expected: [
+				{ choreId: 'terrace', lastCompleted: null, completedBy: null },
 				{ choreId: 'oven', lastCompleted: null, completedBy: null },
 				{ choreId: 'fridge', lastCompleted: null, completedBy: null }
 			]
@@ -56,12 +59,14 @@ describe('Chore Model', () => {
 			states: [
 				{ choreId: 'bathroom', lastCompleted: lastWeek, completedBy: 'alice' },
 				{ choreId: 'floors', lastCompleted: lastWeek, completedBy: 'bob' },
+				{ choreId: 'terrace', lastCompleted: lastWeek, completedBy: 'ed' },
 				{ choreId: 'oven', lastCompleted: lastWeek, completedBy: 'chris' },
 				{ choreId: 'fridge', lastCompleted: lastWeek, completedBy: 'diana' }
 			],
 			expected: [
 				{ choreId: 'bathroom', lastCompleted: lastWeek, completedBy: 'alice' },
-				{ choreId: 'floors', lastCompleted: lastWeek, completedBy: 'bob' }
+				{ choreId: 'floors', lastCompleted: lastWeek, completedBy: 'bob' },
+				{ choreId: 'terrace', lastCompleted: lastWeek, completedBy: 'ed' }
 			]
 		},
 		{
@@ -69,6 +74,7 @@ describe('Chore Model', () => {
 			states: [
 				{ choreId: 'bathroom', lastCompleted: today, completedBy: 'alice' },
 				{ choreId: 'floors', lastCompleted: today, completedBy: 'bob' },
+				{ choreId: 'terrace', lastCompleted: today, completedBy: 'ed' },
 				{ choreId: 'oven', lastCompleted: lastMonth, completedBy: 'chris' },
 				{ choreId: 'fridge', lastCompleted: lastMonth, completedBy: 'diana' }
 			],
@@ -82,6 +88,7 @@ describe('Chore Model', () => {
 			states: [
 				{ choreId: 'bathroom', lastCompleted: inDays(today, -5), completedBy: 'alice' },
 				{ choreId: 'floors', lastCompleted: today, completedBy: 'bob' },
+				{ choreId: 'terrace', lastCompleted: today, completedBy: 'ed' },
 				{ choreId: 'oven', lastCompleted: today, completedBy: 'chris' },
 				{ choreId: 'fridge', lastCompleted: today, completedBy: 'diana' }
 			],
@@ -92,6 +99,7 @@ describe('Chore Model', () => {
 			states: [
 				{ choreId: 'bathroom', lastCompleted: inDays(today, -5), completedBy: 'alice' },
 				{ choreId: 'floors', lastCompleted: today, completedBy: 'bob' },
+				{ choreId: 'terrace', lastCompleted: today, completedBy: 'ed' },
 				{ choreId: 'oven', lastCompleted: today, completedBy: 'chris' },
 				{ choreId: 'fridge', lastCompleted: today, completedBy: 'diana' }
 			],

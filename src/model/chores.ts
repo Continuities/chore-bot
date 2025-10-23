@@ -5,6 +5,7 @@ declare global {
 	type ChoreDefinition = {
 		id: ChoreId;
 		description: string;
+		longDescription: string;
 		frequencyDays: number;
 	};
 
@@ -37,21 +38,33 @@ const Chores: ChoreDefinition[] = [
 	{
 		id: 'bathroom',
 		description: 'clean the bathroom',
+		longDescription:
+			'Clean the toilet, bathtub, and sink. Wipe the mirrors and cabinets. Remove hair from the cat door. Mop the floor.',
 		frequencyDays: 7
 	},
 	{
 		id: 'floors',
 		description: 'clean the common-area floors',
+		longDescription: 'Vacuum and mop the living room, kitchen, and hallway floors.',
+		frequencyDays: 7
+	},
+	{
+		id: 'terrace',
+		description: 'care for the terrace',
+		longDescription:
+			'Summer: Water the plants, sweep the floor, and wipe down furniture. Winter: Shovel enough snow to walk and sit.',
 		frequencyDays: 7
 	},
 	{
 		id: 'oven',
 		description: 'clean the oven',
+		longDescription: 'Deep clean the oven interior, racks, and door.',
 		frequencyDays: 30
 	},
 	{
 		id: 'fridge',
 		description: 'clean the fridge',
+		longDescription: 'Clean the fridge interior and shelves. Remove old food.',
 		frequencyDays: 30
 	}
 ];
