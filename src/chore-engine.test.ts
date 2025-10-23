@@ -29,11 +29,16 @@ describe('Chore Engine', () => {
 				},
 				{
 					assignedTo: jack,
+					choreId: 'terrace',
+					dueDate: nextWeek
+				},
+				{
+					assignedTo: matt,
 					choreId: 'oven',
 					dueDate: nextMonth
 				},
 				{
-					assignedTo: matt,
+					assignedTo: michael,
 					choreId: 'fridge',
 					dueDate: nextMonth
 				}
@@ -61,11 +66,16 @@ describe('Chore Engine', () => {
 				},
 				{
 					assignedTo: jack,
-					choreId: 'oven',
-					dueDate: nextMonth
+					choreId: 'terrace',
+					dueDate: nextWeek
 				},
 				{
 					assignedTo: matt,
+					choreId: 'oven',
+					dueDate: nextMonth
+				},
+				{
+					assignedTo: michael,
 					choreId: 'fridge',
 					dueDate: nextMonth
 				}
@@ -102,6 +112,11 @@ describe('Chore Engine', () => {
 					dueDate: tomorrow
 				},
 				{
+					assignedTo: matt,
+					choreId: 'terrace',
+					dueDate: nextWeek
+				},
+				{
 					assignedTo: jack,
 					choreId: 'oven',
 					dueDate: tomorrow
@@ -142,6 +157,11 @@ describe('Chore Engine', () => {
 					assignedTo: michael,
 					choreId: 'floors',
 					dueDate: tomorrow
+				},
+				{
+					assignedTo: matt,
+					choreId: 'terrace',
+					dueDate: nextWeek
 				},
 				{
 					assignedTo: matt,
