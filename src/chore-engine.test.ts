@@ -6,6 +6,7 @@ import { inDays, withoutTime } from './date';
 
 describe('Chore Engine', () => {
 	const today = withoutTime(new Date());
+	const lastWeek = inDays(today, -7);
 	const tomorrow = inDays(today, 1);
 	const nextWeek = inDays(today, 7);
 	const nextMonth = inDays(today, 30);
@@ -172,6 +173,46 @@ describe('Chore Engine', () => {
 					assignedTo: jack,
 					choreId: 'fridge',
 					dueDate: tomorrow
+				}
+			]
+		},
+		{
+			states: [
+				{
+					choreId: 'floors',
+					completedBy: matt,
+					lastCompleted: today
+				},
+				{
+					choreId: 'oven',
+					completedBy: jack,
+					lastCompleted: today
+				},
+				{
+					choreId: 'fridge',
+					completedBy: michael,
+					lastCompleted: today
+				},
+				{
+					choreId: 'terrace',
+					completedBy: jack,
+					lastCompleted: today
+				}
+			],
+			assignments: [
+				{
+					assignedTo: michael,
+					choreId: 'bathroom',
+					completedBy: michael,
+					dueDate: lastWeek
+				}
+			],
+			expected: [
+				{
+					assignedTo: michael,
+					choreId: 'bathroom',
+					completedBy: michael,
+					dueDate: lastWeek
 				}
 			]
 		}
