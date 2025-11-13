@@ -12,7 +12,10 @@ const {
 	WARNING_DAYS,
 	CHORE_CRON,
 	TRASH_CRON,
-	RECYCLING_CRON
+	RECYCLING_CRON,
+	MONGODB_URI,
+	MONGODB_USER,
+	MONGODB_PASSWORD
 } = process.env;
 
 if (!DISCORD_TOKEN) {
@@ -27,6 +30,10 @@ if (!DISCORD_CHANNEL) {
 	throw new Error('Missing DISCORD_CHANNEL in environment variables');
 }
 
+if (!MONGODB_URI || !MONGODB_USER || !MONGODB_PASSWORD) {
+	console.log('Missing MongoDB configuration. State will not be persisted.');
+}
+
 const ANNOUNCE_CHORES_BOOL = ANNOUNCE_CHORES?.toLowerCase() === 'true';
 const WARNING_DAYS_NUM = WARNING_DAYS ? parseInt(WARNING_DAYS, 10) : 0;
 
@@ -38,5 +45,8 @@ export {
 	WARNING_DAYS_NUM as WARNING_DAYS,
 	CHORE_CRON,
 	TRASH_CRON,
-	RECYCLING_CRON
+	RECYCLING_CRON,
+	MONGODB_URI,
+	MONGODB_USER,
+	MONGODB_PASSWORD
 };
