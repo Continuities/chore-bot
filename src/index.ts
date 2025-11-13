@@ -6,10 +6,12 @@ import cron from 'node-cron';
 import { assignChores } from './chore-engine';
 import ChoresModel, { getChoreDescription } from './model/chores';
 import { withoutTime } from './date';
+import ChoreMessagesModel from './model/chore-messages';
 
 const CONFIRM_EMOJI = '✅';
 
 const model = ChoresModel();
+const choreMessages = ChoreMessagesModel();
 
 const client = new Client({
 	intents: ['Guilds', 'GuildMessages', 'GuildMessageReactions', 'DirectMessages']
@@ -55,7 +57,6 @@ const inChannel = (fn: (channel: TextChannel) => void) => {
 	});
 };
 
-const choreMessages: Map<string, ChoreAssignment> = new Map();
 const assignAndAnnounceChores = () => {
 	console.log('Assining and announcing chores for today');
 
@@ -73,7 +74,12 @@ const assignAndAnnounceChores = () => {
 					`${mention} it's your turn to ${description}!\nReact with ${CONFIRM_EMOJI} when complete.`
 				)
 				.then((message) => {
-					choreMessages.set(message.id, chore);
+					choreMessages.add({
+						choreId: chore.choreId,
+						guildId: channel.guildId,
+						channelId: channel.id,
+						messageId: message.id
+					});
 				})
 				.catch(console.error);
 		});
