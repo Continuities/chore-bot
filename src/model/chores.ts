@@ -31,6 +31,8 @@ declare global {
 	type ChoreModelInit = {
 		states?: ChoreState[];
 		assignments?: ChoreAssignment[];
+		onAssign?: (assignment: ChoreAssignment) => void;
+		onComplete?: (state: ChoreState) => void;
 	};
 }
 
@@ -113,7 +115,11 @@ const ChoresModel = (init?: ChoreModelInit) => {
 		getChoreAssignment: (choreId: ChoreId): ChoreAssignment | undefined =>
 			ChoreAssignments.get(choreId),
 		assignChore: (choreId: ChoreId, assignedTo: UserId, dueDate: Date): void => {
-			ChoreAssignments.set(choreId, { choreId, assignedTo, dueDate });
+			const assignment = { choreId, assignedTo, dueDate };
+			ChoreAssignments.set(choreId, assignment);
+			if (init?.onAssign) {
+				init.onAssign(assignment);
+			}
 		},
 		markChoreCompleted: (choreId: ChoreId, completedBy: UserId, completedAt: Date): void => {
 			const state = ChoreStates[choreId];
@@ -122,6 +128,9 @@ const ChoresModel = (init?: ChoreModelInit) => {
 				state.completedBy = completedBy;
 			}
 			ChoreAssignments.delete(choreId);
+			if (init?.onComplete) {
+				init.onComplete(state);
+			}
 		},
 		getActiveChores: (roommate: UserId): ChoreAssignment[] => {
 			const today = new Date();
