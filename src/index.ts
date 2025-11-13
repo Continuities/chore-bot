@@ -29,7 +29,7 @@ client.on('interactionCreate', async (interaction) => {
 	}
 	const { commandName } = interaction;
 	if (Commands[commandName as keyof typeof Commands]) {
-		Commands[commandName as keyof typeof Commands].execute(model, interaction);
+		Commands[commandName as keyof typeof Commands].execute(model, interaction).catch(console.error);
 	}
 });
 
@@ -39,7 +39,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	if (!chore || emoji.name !== CONFIRM_EMOJI) return;
 
 	if (message.channel.isSendable()) {
-		message.react(`🎉`);
+		message.react(`🎉`).catch(console.error);
 	}
 
 	model.markChoreCompleted(chore.choreId, user.id, withoutTime(new Date()));
@@ -91,7 +91,7 @@ if (CHORE_CRON) {
 if (TRASH_CRON) {
 	cron.schedule(TRASH_CRON, () => {
 		inChannel((channel) => {
-			channel.send(`Hey @everyone, it's time to take out the trash! 🗑️`);
+			channel.send(`Hey @everyone, it's time to take out the trash! 🗑️`).catch(console.error);
 		});
 	});
 } else {
@@ -102,7 +102,9 @@ if (TRASH_CRON) {
 if (RECYCLING_CRON) {
 	cron.schedule(RECYCLING_CRON, () => {
 		inChannel((channel) => {
-			channel.send(`Hey @everyone, it's time to take out the recycling and compost! ♻️`);
+			channel
+				.send(`Hey @everyone, it's time to take out the recycling and compost! ♻️`)
+				.catch(console.error);
 		});
 	});
 } else {
