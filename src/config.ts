@@ -31,7 +31,7 @@ if (!DISCORD_CHANNEL) {
 	throw new Error('Missing DISCORD_CHANNEL in environment variables');
 }
 
-if (!MONGODB_URI || MONGODB_DB || !MONGODB_USER || !MONGODB_PASSWORD) {
+if (!MONGODB_URI || !MONGODB_DB || !MONGODB_USER || !MONGODB_PASSWORD) {
 	console.log('Missing MongoDB configuration. State will not be persisted.');
 }
 
