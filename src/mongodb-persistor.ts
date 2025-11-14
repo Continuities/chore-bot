@@ -1,6 +1,7 @@
 declare global {
 	interface MongoDBPersistorInit {
 		uri: string;
+		database: string;
 		username: string;
 		password: string;
 	}
@@ -12,7 +13,8 @@ const CHORE_STATES = 'choreStates';
 const CHORE_ASSIGNMENTS = 'choreAssignments';
 const CHORE_MESSAGES = 'choreMessages';
 
-const MongoDBPersistor = async ({ uri, username, password }: MongoDBPersistorInit) => {
+const MongoDBPersistor = async ({ uri, database, username, password }: MongoDBPersistorInit) => {
+	console.log('Connecting to MongoDB: ', uri);
 	const client = new MongoClient(uri, {
 		auth: {
 			username,
@@ -21,8 +23,8 @@ const MongoDBPersistor = async ({ uri, username, password }: MongoDBPersistorIni
 	});
 
 	await client.connect();
-	const db = client.db();
-	console.log('Connected to MongoDB');
+	const db = client.db(database);
+	console.log('Connected to MongoDB: ', database);
 
 	return {
 		addChoreMessage: async (choreMessage: ChoreMessage) => {

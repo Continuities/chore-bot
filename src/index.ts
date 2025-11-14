@@ -4,6 +4,7 @@ import {
 	DISCORD_TOKEN,
 	MONGODB_PASSWORD,
 	MONGODB_URI,
+	MONGODB_DB,
 	MONGODB_USER,
 	RECYCLING_CRON,
 	TRASH_CRON
@@ -16,10 +17,11 @@ import MongoDBPersistor from './mongodb-persistor';
 
 (async () => {
 	// Initialise persistors
-	const useMongo = MONGODB_URI && MONGODB_USER && MONGODB_PASSWORD;
+	const useMongo = MONGODB_URI && MONGODB_DB && MONGODB_USER && MONGODB_PASSWORD;
 	const mongo = useMongo
 		? await MongoDBPersistor({
 				uri: MONGODB_URI as string,
+				database: MONGODB_DB as string,
 				username: MONGODB_USER as string,
 				password: MONGODB_PASSWORD as string
 		  })
