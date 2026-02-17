@@ -118,9 +118,13 @@ const DiscordInterface = ({
 	return {
 		assignAndAnnounceChores,
 		announce: (text: string) => {
-			inChannel((channel) => {
-				channel.send(text).catch(console.error);
-			});
+			try {
+				inChannel((channel) => {
+					channel.send(text).catch(console.error);
+				});
+			} catch (error) {
+				console.error('Failed to send announcement:', error);
+			}
 		}
 	};
 };
